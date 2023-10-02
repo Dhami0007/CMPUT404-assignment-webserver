@@ -73,6 +73,28 @@ class MyWebServer(socketserver.BaseRequestHandler):
         # We are going to open index.html by default if the user has entered the directory
             path += 'index.html'
 
+        if ".." in path:
+            print("Handling going Backwards")
+            dirs = ["www","deep"]
+            idx = 0
+            path_comps = path.split('/')
+            for comp in path_comps:
+            # This is to handle situation when client tries to access directories outside "www"
+                if comp in dirs:
+                # comp is either "www" or "deep", get their index
+                    idx = dirs.index(comp)
+                elif comp == "..":
+                # comp is .., then decrement index by 1
+                    idx -= 1
+                elif comp not in dirs:
+                # if comp is not in dirs, break the loop and it will be handled as 404 by the program
+                    break
+
+                if idx < 0:
+                # if index goes below 0, it means client tried accessing directories outside "www" 
+                    self.handle404()
+                    return
+
         file = open(path, "r")
         self.handle200(file, path)
 
