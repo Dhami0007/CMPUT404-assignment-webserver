@@ -87,10 +87,10 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
         mime_type = path.split('.')[-1]     # mime type
         result += f"Content-Type: text/{mime_type}\r\n\r\n".encode()
-
+        
+        print(result.decode())
         result += content.encode()
         self.request.sendall(result)
-        print(result.decode())
         print("----------------------------")
 
     def handle301(self, path):
