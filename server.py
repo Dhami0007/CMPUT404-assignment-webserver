@@ -31,7 +31,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
-        print ("Got a request of: %s\n" % self.data)
+        # print ("Got a request of: %s\n" % self.data)
         self.data = self.data.decode().strip()
 
         components_list = self.data.split() # This is going to split the data received into its different components which we can assess as we go.
@@ -74,7 +74,6 @@ class MyWebServer(socketserver.BaseRequestHandler):
             path += 'index.html'
 
         if ".." in path:
-            print("Handling going Backwards")
             dirs = ["www","deep"]
             idx = 0
             path_comps = path.split('/')
@@ -103,37 +102,28 @@ class MyWebServer(socketserver.BaseRequestHandler):
 
     def handle200(self, file, path):
     # This function will handle 200 status code case
-        print("Handling 200")
         content = file.read()
         result = b'HTTP/1.1 200 OK\r\n'
 
         mime_type = path.split('.')[-1]     # mime type
         result += f"Content-Type: text/{mime_type}\r\n\r\n".encode()
         
-        print(result.decode())
         result += content.encode()
         self.request.sendall(result)
-        print("----------------------------")
 
     def handle301(self, path):
     # This function will handle 301 status code case
-        print("Handling 301")
         result = b"HTTP/1.1 301 Moved Permanently\r\n\r\n"
         result += f"Location: {path}\r\n\r\n".encode()
         self.request.sendall(result)
-        print("----------------------------")
 
     def handle404(self):
     # This function will handle 404 status code case
-        print("Handling 404")
         self.request.sendall(b'HTTP/1.1 404 Not Found\r\n\r\n')
-        print("----------------------------")
 
     def handle405(self):
     # This function will handle 405 status code case
-        print("Handling 405")
         self.request.sendall(b'HTTP/1.1 405 Method Not Allowed\r\n\r\n')
-        print("----------------------------")
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
