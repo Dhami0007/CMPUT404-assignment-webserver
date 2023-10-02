@@ -31,7 +31,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
     
     def handle(self):
         self.data = self.request.recv(1024).strip()
-        print ("Got a request of: %s\n" % self.data)
+        # print ("Got a request of: %s\n" % self.data)
         self.data = self.data.decode().strip()
 
         components_list = self.data.split() # This is going to split the data received into its different components which we can assess as we go.
@@ -50,71 +50,64 @@ class MyWebServer(socketserver.BaseRequestHandler):
  
         if request_type == 'GET':
         # We will not be handling any other request types other than GET
-        
+
+            # Used https://docs.python.org/3/library/exceptions.html to handle File I/O exceptions
             try:
                 self.handlePath(full_path)
             
             except FileNotFoundError:
+            # This exception will occur when we will try to open a file that does not exist.
                 self.handle404()
             
+            # Used https://www.askpython.com/python/examples/handling-error-13-permission-denied#:~:text=Error%2013%3A%20Permission%20Denied%20in%20Python%20is%20an%20I%2FO,file%2C%20or%20having%20incorrect%20permissions.
+            # to handle permission denied error
             except IOError:
+            # This error will occur when we will encounter path to a directory instead
                 full_path += "/"
                 self.handle301(full_path)
                 self.handlePath(full_path)
 
         else:
+        # This will handle the case when we encounter any other request than GET
             self.handle405()
     
     def handlePath(self, path):
-    # This function will start the process of handling the path and will call other functions to deliver status codes
+    # This function will start the process of handling the path
         
         if path[-1] == '/':
         # We are going to open index.html by default if the user has entered the directory
             path += 'index.html'
 
-        print(f'The full path is {path}')
         file = open(path, "r")
         self.handle200(file, path)
 
     # THESE ARE THE STATUS CODES HANDLER
+    # Used https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/301 for information on the status codes
 
     def handle200(self, file, path):
     # This function will handle 200 status code case
-        print("Handling 200")
-
         content = file.read()
         result = b'HTTP/1.1 200 OK\r\n'
 
-        if ".html" in path[-5:len(path)]:
-            result += b"Content-Type: text/html\r\n\r\n"
-
-        elif ".css" in path[-5:len(path)]:
-            result += b"Content-Type: text/css\r\n\r\n"
-
-        print(f"Header sent:\n{result.decode()}")
+        mime_type = path.split('.')[-1]     # mime type
+        result += f"Content-Type: text/{mime_type}\r\n\r\n".encode()
 
         result += content.encode()
         self.request.sendall(result)
-        print("-----------------------------------------------")
 
     def handle301(self, path):
     # This function will handle 301 status code case
-        print("Handling 301")
         result = b"HTTP/1.1 301 Moved Permanently\r\n\r\n"
         result += f"Location: {path}\r\n\r\n".encode()
         self.request.sendall(result)
 
     def handle404(self):
     # This function will handle 404 status code case
-        print("Handling 404")
         self.request.sendall(b'HTTP/1.1 404 Not Found\r\n\r\n')
-        print("-----------------------------------------------")
 
     def handle405(self):
     # This function will handle 405 status code case
-        print("Handling 405")
         self.request.sendall(b'HTTP/1.1 405 Method Not Allowed\r\n\r\n')
-        print("-----------------------------------------------")
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080

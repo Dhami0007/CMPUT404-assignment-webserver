@@ -24,3 +24,15 @@ examples thus some of the code is Copyright © 2001-2013 Python
 Software Foundation; All Rights Reserved under the PSF license (GPL
 compatible) http://docs.python.org/2/library/socketserver.html
 
+========================
+
+SOURCES USED:
+
+Python Exception Handling for File I/O:
+https://docs.python.org/3/library/exceptions.html
+
+How to handle Permission Denied Error:
+https://www.askpython.com/python/examples/handling-error-13-permission-denied#:~:text=Error%2013%3A%20Permission%20Denied%20in%20Python%20is%20an%20I%2FO,file%2C%20or%20having%20incorrect%20permissions.
+
+Information about status codes:
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/301
