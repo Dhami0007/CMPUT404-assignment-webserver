@@ -37,12 +37,9 @@ class MyWebServer(socketserver.BaseRequestHandler):
         components_list = self.data.split() # This is going to split the data received into its different components which we can assess as we go.
 
         # Now we are going to check if the path provided is a valid path 
-        request_type = components_list[0].strip()   # We are only handling GET requests
-        requested_path = components_list[1].strip()   # Since path is our second element in the list of the components
+        request_type = components_list[0]   # We are only handling GET requests
+        requested_path = components_list[1] # Since path is our second element in the list of the components
         folder = "www"         # Since as a webserver, we only want to serve files that are in our folder www
-        
-        if requested_path[0] != '/':
-            requested_path = '/' + requested_path
 
         full_path = folder + requested_path # This is the path that we will eventually go finding
 
@@ -76,7 +73,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
             path += 'index.html'
 
         print(f'The full path is {path}')
-        file = open(path)
+        file = open(path, "r")
         self.handle200(file, path)
 
     # THESE ARE THE STATUS CODES HANDLER
@@ -86,13 +83,13 @@ class MyWebServer(socketserver.BaseRequestHandler):
         print("Handling 200")
 
         content = file.read()
-        result = b'HTTP/1.1 200 OK\r\n\r\n'
+        result = b'HTTP/1.1 200 OK\r\n'
 
         if ".html" in path[-5:len(path)]:
-            result += f"Content-Type: text/html\r\n\r\n".encode()
+            result += b"Content-Type: text/html\r\n\r\n"
 
         elif ".css" in path[-5:len(path)]:
-            result += f"Content-Type: text/css\r\n\r\n".encode()
+            result += b"Content-Type: text/css\r\n\r\n"
 
         print(f"Header sent:\n{result.decode()}")
 

@@ -104,7 +104,7 @@ class TestYourWebserver(unittest.TestCase):
         os.system("cp -r www/deep www/hardcode")
         url = self.baseurl + "/hardcode/index.html"
         req = request.urlopen(url, None, 3)
-        self.assertTru0e( req.getcode()  == 200 , "200 OK Not FOUND! Hardcoding? /hardcode/index.html")
+        self.assertTrue( req.getcode()  == 200 , "200 OK Not FOUND! Hardcoding? /hardcode/index.html")
         self.assertTrue( req.info().get_content_type() == "text/html", ("Bad mimetype for html! %s" % req.info().get_content_type()))
         url = self.baseurl + "/hardcode/"
         req = request.urlopen(url, None, 3)
